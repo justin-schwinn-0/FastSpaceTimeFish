@@ -1,13 +1,16 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class playerMovement : MonoBehaviour
 {
     
     public CharacterController controller;
     public Transform cam;
-    public Text debugText;
+    //public Text debugText;
     public float MaxMovementSpeed = 5.0f;
+
+    public float jumpVelocity;
+
+    private float yVelocity;
 
 
 
