@@ -1,25 +1,25 @@
 using UnityEngine;
-
+using UnityEngine.UI;
 public class playerMovement : MonoBehaviour
 {
     
     public CharacterController controller;
     public Transform cam;
-    //public Text debugText;
+
+    public float jumpVelocity = 40;
+
+    public float gravity = 100;
     public float MaxMovementSpeed = 5.0f;
-
-    public float jumpVelocity;
-
-    private float yVelocity;
-
-
-
     PlayerControls p;
+
+    public Text debugText;
 
     private Vector2 si;
 
     private float turnSmoothTime = 0.05f;
     private float turnVelocity;
+
+    private float yVel;
 
    
     void Awake()
@@ -28,6 +28,7 @@ public class playerMovement : MonoBehaviour
 
         p.movement.move.performed += c =>  si = c.ReadValue<Vector2>();
         p.movement.move.canceled += c =>  dampInput();
+        p.movement.jump.performed += c => jump();
     }
     void OnEnable()
     {
@@ -51,6 +52,10 @@ public class playerMovement : MonoBehaviour
         float h = si.x;
         float v = si.y;
         Vector3 direction = new Vector3(h,0,v);
+        Vector3 movD = new Vector3();
+
+        debugText.text = "yv: " + yVel;
+        debugText.text += "\ngrounded: " + controller.isGrounded;
 
         if(direction.magnitude >= 0.1f)
         {
@@ -58,14 +63,30 @@ public class playerMovement : MonoBehaviour
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y,targetA,ref turnVelocity, turnSmoothTime);
             transform.rotation= Quaternion.Euler(0,angle,0);
 
-            Vector3 movD = Quaternion.Euler(0f,targetA,0f) * Vector3.forward;
+            movD = Quaternion.Euler(0f,targetA,0f) * new Vector3(0,0,1);
 
-            controller.Move(movD.normalized * MaxMovementSpeed * Time.deltaTime);
+            movD = movD.normalized * MaxMovementSpeed * direction.magnitude * Time.deltaTime;
         }
 
+        movD.y = yVel * Time.deltaTime;
+
+        controller.Move(movD);
+
+        if(!controller.isGrounded)
+        {
+            yVel -= gravity * Time.deltaTime;
+        }
     }
     void dampInput()
     {
         si = si * 0.099f;
+    }
+
+    void jump()
+    {
+        if(controller.isGrounded)
+        {
+            yVel = jumpVelocity;
+        }
     }
 }

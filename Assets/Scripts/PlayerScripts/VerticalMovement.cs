@@ -40,17 +40,22 @@ public class VerticalMovement : MonoBehaviour
             yVel = yVel - gravity * Time.deltaTime;
         }
 
-        c.SimpleMove(new Vector3(0,yVel,0));
+        c.Move(new Vector3(0,yVel*Time.deltaTime,0));
     }
     
     void jump()
     {
-        if(c.isGrounded)
+        if(!c.isGrounded)
         {
             yVel = jumpVelocity;
             Debug.Log("also jumped");
         }
         else
             Debug.Log("jump called");
+    }
+
+    float verticalComponemnt()
+    {
+        return yVel;
     }
 }
