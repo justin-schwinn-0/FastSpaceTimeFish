@@ -2,10 +2,12 @@ using UnityEngine;
 
 public enum TimeState
 {
-    Reverse,normal,Slow,Stopped,TransitionPause
+    normal,Reverse,Slowed,Stopped,TransitionPause
 }
 public class TimeManipHandler : MonoBehaviour
 {
+    public SoundManager sound;
+
     public float reverse = -1.0f;
     public float slow = 0.01f;
     private float stopped = 0f;
@@ -21,6 +23,8 @@ public class TimeManipHandler : MonoBehaviour
     private float reverseLimit;
 
     private TimeState ts;
+
+    private TimeState target;
 
     private RewindList rewindAbility;
 
@@ -44,8 +48,6 @@ public class TimeManipHandler : MonoBehaviour
     {
         p.timeStuff.Disable();
     }
-
-    // Start is called before the first frame update
     void Start()
     {
         slowPower = SlowDurration;
@@ -53,14 +55,12 @@ public class TimeManipHandler : MonoBehaviour
 
         rewindAbility = new RewindList();
     }
-
-    // Update is called once per frame
     void Update()
     {
         switch(ts)
         {
             case TimeState.normal: normalUpdate(); break;
-            case TimeState.Slow: slowedTimeUpdate(); break;
+            case TimeState.Slowed: slowedTimeUpdate(); break;
             case TimeState.Stopped: stoppedTimeUpdate(); break;
             case TimeState.Reverse: ReverseTimeUpdate(); break;
             case TimeState.TransitionPause: TransitionPauseUpdate(); break;
@@ -76,7 +76,7 @@ public class TimeManipHandler : MonoBehaviour
     private void toSlowedTime()
     {
         SpecialTime.timeScale = slow;
-        ts = TimeState.Slow;
+        ts = TimeState.Slowed;
     }
     private void toStoppedTime()
     {
@@ -88,10 +88,11 @@ public class TimeManipHandler : MonoBehaviour
         SpecialTime.timeScale = reverse;
         ts = TimeState.Reverse;
     }
-    private void toTransition()
+    private void toTransition(TimeState t, float pauseLength = 0.33f)
     {
         ts = TimeState.TransitionPause;
-        transitionRemaining = 0.33f;
+        target = t;
+        transitionRemaining = pauseLength;
         SpecialTime.timeScale = stopped;
     }
     private void normalUpdate()
@@ -144,13 +145,22 @@ public class TimeManipHandler : MonoBehaviour
                 transform.rotation = r.rot;
             }
         }
-        else toTransition();
+        else toTransition(TimeState.normal,0.33f);
     }
     private void TransitionPauseUpdate()
     {
         if(transitionRemaining < 0)
         {
-            toNormalTime();
+            switch(ts)
+            {
+            case TimeState.normal: toNormalTime(); break;
+            case TimeState.Slowed: toSlowedTime(); break;
+            case TimeState.Stopped: toStoppedTime(); break;
+            case TimeState.Reverse: toReverseTime(); break;
+            default: toNormalTime(); break;
+            }
+
+            sound.Play("toNormal");
         }
         else
         {
