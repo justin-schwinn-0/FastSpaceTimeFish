@@ -1,44 +1,49 @@
 using UnityEngine;
 
-public enum TimeState
-{
-    normal,Reverse,Slowed,Stopped,TransitionPause,revertToCheckpoint
-}
+
 public class TimeManipHandler : MonoBehaviour
 {
-    public SoundManager sound;
-
     public float reverse = -1.0f;
-    public float slow = 0.01f;
+    public float normal = 1.0f;
+    public float Slow = 0.01f;
     private float stopped = 0f;
 
-    public float SlowDurration = 10.0f;
-    public float StopDurration = 5.0f;
-    public float ReverseDurration = 3.0f;
-    public float powerRegen = 1.0f;
+    private PlayerControls p;
+
+
+
+    public float slowPowerCap = 10.0f;
+    public float stopPowerCap = 5.0f;
+    public float reverseAllowance = 3.0f;
+
+    public float SlowPowerConsume = 5.0f;
+
+    public float stopPowerConsume = 1.0f;
+    public float powerRegen = -1.0f;
+
+
 
 
     private float slowPower;
     private float stopPower;
     private float reverseLimit;
 
-    private TimeState ts;
 
-    private TimeState target;
+    private float slowConsumption;
+    private float stopConsumption;
 
     private RewindList rewindAbility;
 
-    private PlayerControls p;
 
-    private float transitionRemaining;
+    private bool reversing;
 
     void Awake()
     {
         p = new PlayerControls();
-        p.timeStuff.normal.performed += c =>toNormalTime();
-        p.timeStuff.slow.performed += c =>toSlowedTime();
-        p.timeStuff.stop.performed += c =>toStoppedTime();
-        p.timeStuff.reverse.performed += c =>toReverseTime();
+        p.timeStuff.normal.performed += c =>normalTime();
+        p.timeStuff.slow.performed += c =>slowTime();
+        p.timeStuff.stop.performed += c =>stopTime();
+        p.timeStuff.reverse.performed += c =>reverseTime();
     }
     void OnEnable()
     {
@@ -48,177 +53,104 @@ public class TimeManipHandler : MonoBehaviour
     {
         p.timeStuff.Disable();
     }
+
+    // Start is called before the first frame update
     void Start()
     {
-        slowPower = SlowDurration;
-        stopPower = StopDurration;
+        slowPower = slowPowerCap;
+        stopPower = stopPowerCap;
 
         rewindAbility = new RewindList();
     }
+
+    // Update is called once per frame
     void Update()
     {
-        switch(ts)
+        if(!reversing)
         {
-            case TimeState.normal: normalUpdate(); break;
-            case TimeState.Slowed: slowedTimeUpdate(); break;
-            case TimeState.Stopped: stoppedTimeUpdate(); break;
-            case TimeState.Reverse: ReverseTimeUpdate(); break;
-            case TimeState.TransitionPause: TransitionPauseUpdate(); break;
-            case TimeState.revertToCheckpoint: revertToCheckpintUpdate(); break;
-        }
-    }
+            Vector3 v = new Vector3(transform.position.x,transform.position.y,transform.position.z);
+            RevertFrame r = new RevertFrame(SpecialTime.GAME_TIME, transform.rotation, v);
+            
+            rewindAbility.addFrame(r);
 
+            reverseLimit = SpecialTime.GAME_TIME - reverseAllowance;
 
-    private void toNormalTime()
-    {
-        SpecialTime.timeScale = 1.0f;
-        ts = TimeState.normal;
-    }
-    private void toSlowedTime()
-    {
-        SpecialTime.timeScale = slow;
-        ts = TimeState.Slowed;
-    }
-    private void toStoppedTime()
-    {
-        SpecialTime.timeScale = stopped;
-        ts = TimeState.Stopped;
-    }
-    private void toReverseTime()
-    {
-        SpecialTime.timeScale = reverse;
-        ts = TimeState.Reverse;
-    }
-    private void toTransition(TimeState t, float pauseLength = 0.33f)
-    {
-        ts = TimeState.TransitionPause;
-        target = t;
-        transitionRemaining = pauseLength;
-        SpecialTime.timeScale = stopped;
-    }
+            if(reverseLimit < 0)
+                reverseLimit = 0;
 
-    private void toCheckpoint()
-    {
-        SpecialTime.timeScale = -1.5f;
-        ts = TimeState.revertToCheckpoint;
-    }
-    private void normalUpdate()
-    {
-        slowPower += powerRegen * Time.deltaTime;
-
-        stopPower += powerRegen * Time.deltaTime;
-
-        capPower();
-        addRevertFrame();
-    }
-    private void slowedTimeUpdate()
-    {
-        slowPower -= Time.deltaTime;
-
-        stopPower += powerRegen * 0.1f * Time.deltaTime;
-
-        if( slowPower < 0)
-        {
-            slowPower = 0;
-            toNormalTime();
-        }
-
-        capPower();
-        addRevertFrame();
-    }
-    private void stoppedTimeUpdate()
-    {
-        slowPower += 0.5f * Time.deltaTime;
-
-        stopPower -= Time.deltaTime;
-
-        if(stopPower < 0)
-        {
-            stopPower = 0;
-            toNormalTime();
-        }
-
-        capPower();
-        addRevertFrame();
-    }
-    private void ReverseTimeUpdate()
-    {
-        if(SpecialTime.GAME_TIME > reverseLimit)
-        {
-            RevertFrame r = rewindAbility.popTil(SpecialTime.GAME_TIME);
-            if(r != null)
-            {
-                transform.position = r.pos;
-                transform.rotation = r.rot;
-            }
-        }
-        else toTransition(TimeState.normal,0.33f);
-    }
-    private void TransitionPauseUpdate()
-    {
-        if(transitionRemaining < 0)
-        {
-            switch(target)
-            {
-            case TimeState.normal: toNormalTime(); break;
-            case TimeState.Slowed: toSlowedTime(); break;
-            case TimeState.Stopped: toStoppedTime(); break;
-            case TimeState.Reverse: toReverseTime(); break;
-            case TimeState.revertToCheckpoint: toCheckpoint(); break;
-            default: toNormalTime(); break;
-            }
-
-            sound.Play("toNormal");
+            rewindAbility.cullFrames(reverseLimit);
         }
         else
         {
-            transitionRemaining -= Time.deltaTime;
-        }
-    }
-    private void revertToCheckpintUpdate()
-    {
-        if(SpecialTime.GAME_TIME > 0)
-        {
-            RevertFrame r = rewindAbility.popTil(SpecialTime.GAME_TIME);
-            if(r != null)
+            if(SpecialTime.GAME_TIME > reverseLimit)
             {
-                transform.position = r.pos;
-                transform.rotation = r.rot;
+                RevertFrame r = rewindAbility.popTil(SpecialTime.GAME_TIME);
+                if(r != null)
+                {
+                    transform.position = r.pos;
+                    transform.rotation = r.rot;
+                }
             }
+            else normalTime();
         }
-        else toTransition(TimeState.normal,0.33f);
+        
+        checkPower();
     }
-    
-    private void capPower()
+
+    private void reverseTime()
     {
-        if(slowPower > SlowDurration)
+        SpecialTime.timeScale = reverse;
+        slowConsumption = 0;
+        stopConsumption = 0;
+        reversing = true;
+    }
+    private void normalTime()
+    {
+        SpecialTime.timeScale = normal;
+        slowConsumption = powerRegen;
+        stopConsumption = powerRegen;
+        reversing = false;
+    }
+
+    private void slowTime()
+    {
+        SpecialTime.timeScale = Slow;
+        slowConsumption = SlowPowerConsume;
+        stopConsumption = powerRegen * 1/5;
+        reversing = false;
+    }
+    private void stopTime()
+    {
+        SpecialTime.timeScale = stopped;
+        slowConsumption = powerRegen * 0.1f;
+        stopConsumption = stopPowerConsume;
+        reversing = false;
+    }
+    private void checkPower()
+    {
+        slowPower -= slowConsumption * Time.deltaTime;
+        stopPower -= stopConsumption * Time.deltaTime;
+
+        if(slowPower > slowPowerCap)
         {
-            slowPower = SlowDurration;
+            slowPower = slowPowerCap;
         }
-
-        if(stopPower > StopDurration)
+        else if( slowPower < 0)
         {
-            stopPower = StopDurration;
+            slowPower = 0;
+            normalTime();
+        }
+
+        if(stopPower > stopPowerCap)
+        {
+            stopPower = stopPowerCap;
+        }
+        else if(stopPower < 0)
+        {
+            stopPower = 0;
+            normalTime();
         }
     }
-    private void addRevertFrame()
-    {
-        Vector3 v = new Vector3(transform.position.x,transform.position.y,transform.position.z);
-        RevertFrame r = new RevertFrame(SpecialTime.GAME_TIME, transform.rotation, v);
-        
-        rewindAbility.addFrame(r);
-        reverseLimit = SpecialTime.GAME_TIME - ReverseDurration;
-        
-        if(reverseLimit < 0)
-            reverseLimit = 0;
-        
-    }
-
-    public void revertToCheckpoint()
-    {
-        toTransition(TimeState.revertToCheckpoint);
-    }
-
 
     public float getslowPower()
     {
@@ -227,11 +159,6 @@ public class TimeManipHandler : MonoBehaviour
     public float getStopPower()
     {
         return stopPower;
-    }
-
-    public TimeState getTimeState()
-    {
-        return ts;
     }
 
 

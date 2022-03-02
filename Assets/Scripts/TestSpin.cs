@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class TestSpin : MonoBehaviour
 {
+    public SpecialTime s;
     public float Speed = 360f;
+
     private Vector3 rot = new Vector3();
     
     

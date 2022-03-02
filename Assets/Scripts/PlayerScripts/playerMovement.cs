@@ -5,13 +5,14 @@ public class playerMovement : MonoBehaviour
     
     public CharacterController controller;
     public Transform cam;
-    public TimeManipHandler t;
 
     public float jumpVelocity = 40;
 
     public float gravity = 100;
     public float MaxMovementSpeed = 5.0f;
     PlayerControls p;
+
+    public Text debugText;
 
     private Vector2 si;
 
@@ -37,16 +38,13 @@ public class playerMovement : MonoBehaviour
     {
          p.movement.Disable();
     }
+    void Start()
+    {
+    }
 
     void Update()
     {
-        switch(t.getTimeState()) // switch forces this movement script to do nothing while time is being reversed
-        {
-            case TimeState.normal: newMove(); break;
-            case TimeState.Slowed: newMove(); break;
-            case TimeState.Stopped: newMove(); break;
-            default: break;
-        }
+        newMove();
     }
 
     void newMove()
@@ -55,6 +53,9 @@ public class playerMovement : MonoBehaviour
         float v = si.y;
         Vector3 direction = new Vector3(h,0,v);
         Vector3 movD = new Vector3();
+
+        debugText.text = "yv: " + yVel;
+        debugText.text += "\ngrounded: " + controller.isGrounded;
 
         if(direction.magnitude >= 0.1f)
         {
@@ -76,7 +77,6 @@ public class playerMovement : MonoBehaviour
             yVel -= gravity * Time.deltaTime;
         }
     }
-    
     void dampInput()
     {
         si = si * 0.099f;
