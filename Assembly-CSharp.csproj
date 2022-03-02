@@ -41,7 +41,8 @@
      <Compile Include="Assets\Scripts\SpecialTime.cs" />
      <Compile Include="Assets\Scripts\PlayerScripts\playerMovement.cs" />
      <Compile Include="Assets\Scripts\soundsScripts\SoundManager.cs" />
-     <Compile Include="Assets\Scripts\FtScripts\FTred.cs" />
+     <Compile Include="Assets\Scripts\FtScripts\FTGreen.cs" />
+     <Compile Include="Assets\Scripts\FtScripts\FTRed.cs" />
      <Compile Include="Assets\Scripts\FtScripts\FTBlue.cs" />
      <Compile Include="Assets\Scripts\RewindScripts\RevertFrame.cs" />
      <Compile Include="Assets\Scripts\PlayerScripts\VerticalMovement.cs" />

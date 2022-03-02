@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FTGreen : MonoBehaviour
+public class FTgreen : MonoBehaviour
 {
     void Awake()
     {
@@ -8,19 +8,24 @@ public class FTGreen : MonoBehaviour
 
         gameObject.GetComponent<BoxCollider>().isTrigger = true;
     }
+
+    // called when the player enters the trigger
     void OnTriggerEnter(Collider c)
     {
-        
+
     }
 
     void update()
     {
-        // do stuff every frame
+
     }
 
+    bool isActive(bool test)
+    {
+        return test;
+    }
     bool isActive()
     {
         return false;
     }
-    
 }
