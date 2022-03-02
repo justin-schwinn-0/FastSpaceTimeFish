@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FTred : MonoBehaviour
+public class FTRed : MonoBehaviour
 {
     void Awake()
     {
