@@ -40,16 +40,18 @@
      <Compile Include="Assets\Scripts\uiScripts\slowPowerUI.cs" />
      <Compile Include="Assets\Scripts\SpecialTime.cs" />
      <Compile Include="Assets\Scripts\PlayerScripts\playerMovement.cs" />
+     <Compile Include="Assets\Scripts\soundsScripts\SoundManager.cs" />
+     <Compile Include="Assets\Scripts\FtScripts\FTred.cs" />
+     <Compile Include="Assets\Scripts\FtScripts\FTBlue.cs" />
      <Compile Include="Assets\Scripts\RewindScripts\RevertFrame.cs" />
      <Compile Include="Assets\Scripts\PlayerScripts\VerticalMovement.cs" />
      <Compile Include="Assets\PlayerControls.cs" />
+     <Compile Include="Assets\Scripts\soundsScripts\Sound.cs" />
      <Compile Include="Assets\Scripts\PlayerScripts\CameraController.cs" />
+     <Compile Include="Assets\Scripts\NewBehaviourScript.cs" />
      <Compile Include="Assets\Scripts\TestSpin.cs" />
      <Compile Include="Assets\Scripts\RewindScripts\RewindList.cs" />
      <Compile Include="Assets\cameraControls.cs" />
-     <Compile Include="Assets\Scripts\NewBehaviourScript.cs" />
-     <Compile Include="Assets\Scripts\soundsScripts\Sound.cs" />
-     <Compile Include="Assets\Scripts\soundsScripts\SoundManager.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.29f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>

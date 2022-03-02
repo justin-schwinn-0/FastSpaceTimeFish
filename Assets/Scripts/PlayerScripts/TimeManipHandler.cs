@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum TimeState
 {
-    normal,Reverse,Slowed,Stopped,TransitionPause
+    normal,Reverse,Slowed,Stopped,TransitionPause,revertToCheckpoint
 }
 public class TimeManipHandler : MonoBehaviour
 {
@@ -64,6 +64,7 @@ public class TimeManipHandler : MonoBehaviour
             case TimeState.Stopped: stoppedTimeUpdate(); break;
             case TimeState.Reverse: ReverseTimeUpdate(); break;
             case TimeState.TransitionPause: TransitionPauseUpdate(); break;
+            case TimeState.revertToCheckpoint: revertToCheckpintUpdate(); break;
         }
     }
 
@@ -94,6 +95,12 @@ public class TimeManipHandler : MonoBehaviour
         target = t;
         transitionRemaining = pauseLength;
         SpecialTime.timeScale = stopped;
+    }
+
+    private void toCheckpoint()
+    {
+        SpecialTime.timeScale = -1.5f;
+        ts = TimeState.revertToCheckpoint;
     }
     private void normalUpdate()
     {
@@ -151,12 +158,13 @@ public class TimeManipHandler : MonoBehaviour
     {
         if(transitionRemaining < 0)
         {
-            switch(ts)
+            switch(target)
             {
             case TimeState.normal: toNormalTime(); break;
             case TimeState.Slowed: toSlowedTime(); break;
             case TimeState.Stopped: toStoppedTime(); break;
             case TimeState.Reverse: toReverseTime(); break;
+            case TimeState.revertToCheckpoint: toCheckpoint(); break;
             default: toNormalTime(); break;
             }
 
@@ -167,6 +175,20 @@ public class TimeManipHandler : MonoBehaviour
             transitionRemaining -= Time.deltaTime;
         }
     }
+    private void revertToCheckpintUpdate()
+    {
+        if(SpecialTime.GAME_TIME > 0)
+        {
+            RevertFrame r = rewindAbility.popTil(SpecialTime.GAME_TIME);
+            if(r != null)
+            {
+                transform.position = r.pos;
+                transform.rotation = r.rot;
+            }
+        }
+        else toTransition(TimeState.normal,0.33f);
+    }
+    
     private void capPower()
     {
         if(slowPower > SlowDurration)
@@ -190,7 +212,11 @@ public class TimeManipHandler : MonoBehaviour
         if(reverseLimit < 0)
             reverseLimit = 0;
         
-        rewindAbility.cullFrames(reverseLimit);
+    }
+
+    public void revertToCheckpoint()
+    {
+        toTransition(TimeState.revertToCheckpoint);
     }
 
 

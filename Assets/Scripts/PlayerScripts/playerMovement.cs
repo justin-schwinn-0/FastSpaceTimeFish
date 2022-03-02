@@ -42,9 +42,10 @@ public class playerMovement : MonoBehaviour
     {
         switch(t.getTimeState()) // switch forces this movement script to do nothing while time is being reversed
         {
-            case TimeState.Reverse: break;
-            case TimeState.TransitionPause: break;
-            default: newMove(); break;
+            case TimeState.normal: newMove(); break;
+            case TimeState.Slowed: newMove(); break;
+            case TimeState.Stopped: newMove(); break;
+            default: break;
         }
     }
 
