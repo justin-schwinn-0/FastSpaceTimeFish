@@ -1,7 +1,10 @@
 using UnityEngine;
-
-public class FTgreen : MonoBehaviour
+public class FTGreen : MonoBehaviour
 {
+    public bool persistant;
+    bool pressed;
+    bool hasBeenActivated;
+
     void Awake()
     {
         gameObject.tag = "FTgreen";
@@ -13,19 +16,29 @@ public class FTgreen : MonoBehaviour
     void OnTriggerEnter(Collider c)
     {
 
+        if(c.CompareTag("PLayer"))
+        {
+            if(persistant)
+            {
+                hasBeenActivated = true;
+            }
+            else 
+            {
+                pressed = true;
+            }
+        }
     }
-
-    void update()
+    void OnTriggerExit(Collider c)
     {
-
+        pressed = false;
     }
 
-    bool isActive(bool test)
+    public bool isActive(bool test)
     {
         return test;
     }
-    bool isActive()
+    public bool isActive()
     {
-        return false;
+        return (persistant) ? hasBeenActivated : pressed;
     }
 }
