@@ -246,6 +246,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "General",
+            "id": "337c620c-f6bf-488c-bb56-dabb616694c3",
+            "actions": [
+                {
+                    "name": "esc",
+                    "type": "Button",
+                    "id": "ed1b842b-7809-4a38-9cbb-84dd7c6a90e2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "debug",
+                    "type": "Button",
+                    "id": "f01d62b0-24e9-40b7-98b9-649a110fd21e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "bd52d847-d05a-4580-9a83-4b51b89fdbaa",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "esc",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "07062ee5-cc5c-4541-b578-8dd41c36a3ed",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "debug",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

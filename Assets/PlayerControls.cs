@@ -268,6 +268,54 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""General"",
+            ""id"": ""337c620c-f6bf-488c-bb56-dabb616694c3"",
+            ""actions"": [
+                {
+                    ""name"": ""esc"",
+                    ""type"": ""Button"",
+                    ""id"": ""ed1b842b-7809-4a38-9cbb-84dd7c6a90e2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""debug"",
+                    ""type"": ""Button"",
+                    ""id"": ""f01d62b0-24e9-40b7-98b9-649a110fd21e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""bd52d847-d05a-4580-9a83-4b51b89fdbaa"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""esc"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""07062ee5-cc5c-4541-b578-8dd41c36a3ed"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""debug"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -282,6 +330,10 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_timeStuff_slow = m_timeStuff.FindAction("slow", throwIfNotFound: true);
         m_timeStuff_stop = m_timeStuff.FindAction("stop", throwIfNotFound: true);
         m_timeStuff_reverse = m_timeStuff.FindAction("reverse", throwIfNotFound: true);
+        // General
+        m_General = asset.FindActionMap("General", throwIfNotFound: true);
+        m_General_esc = m_General.FindAction("esc", throwIfNotFound: true);
+        m_General_debug = m_General.FindAction("debug", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -435,6 +487,47 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         }
     }
     public TimeStuffActions @timeStuff => new TimeStuffActions(this);
+
+    // General
+    private readonly InputActionMap m_General;
+    private IGeneralActions m_GeneralActionsCallbackInterface;
+    private readonly InputAction m_General_esc;
+    private readonly InputAction m_General_debug;
+    public struct GeneralActions
+    {
+        private @PlayerControls m_Wrapper;
+        public GeneralActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @esc => m_Wrapper.m_General_esc;
+        public InputAction @debug => m_Wrapper.m_General_debug;
+        public InputActionMap Get() { return m_Wrapper.m_General; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(GeneralActions set) { return set.Get(); }
+        public void SetCallbacks(IGeneralActions instance)
+        {
+            if (m_Wrapper.m_GeneralActionsCallbackInterface != null)
+            {
+                @esc.started -= m_Wrapper.m_GeneralActionsCallbackInterface.OnEsc;
+                @esc.performed -= m_Wrapper.m_GeneralActionsCallbackInterface.OnEsc;
+                @esc.canceled -= m_Wrapper.m_GeneralActionsCallbackInterface.OnEsc;
+                @debug.started -= m_Wrapper.m_GeneralActionsCallbackInterface.OnDebug;
+                @debug.performed -= m_Wrapper.m_GeneralActionsCallbackInterface.OnDebug;
+                @debug.canceled -= m_Wrapper.m_GeneralActionsCallbackInterface.OnDebug;
+            }
+            m_Wrapper.m_GeneralActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @esc.started += instance.OnEsc;
+                @esc.performed += instance.OnEsc;
+                @esc.canceled += instance.OnEsc;
+                @debug.started += instance.OnDebug;
+                @debug.performed += instance.OnDebug;
+                @debug.canceled += instance.OnDebug;
+            }
+        }
+    }
+    public GeneralActions @General => new GeneralActions(this);
     public interface IMovementActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -446,5 +539,10 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnSlow(InputAction.CallbackContext context);
         void OnStop(InputAction.CallbackContext context);
         void OnReverse(InputAction.CallbackContext context);
+    }
+    public interface IGeneralActions
+    {
+        void OnEsc(InputAction.CallbackContext context);
+        void OnDebug(InputAction.CallbackContext context);
     }
 }

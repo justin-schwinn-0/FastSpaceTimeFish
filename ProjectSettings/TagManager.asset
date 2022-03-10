@@ -6,6 +6,7 @@ TagManager:
   tags:
   - FTblue
   - FTred
+  - FTgreen
   layers:
   - Default
   - TransparentFX

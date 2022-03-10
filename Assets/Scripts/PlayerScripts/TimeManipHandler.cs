@@ -35,10 +35,10 @@ public class TimeManipHandler : MonoBehaviour
     void Awake()
     {
         p = new PlayerControls();
-        p.timeStuff.normal.performed += c =>toNormalTime();
-        p.timeStuff.slow.performed += c =>toSlowedTime();
-        p.timeStuff.stop.performed += c =>toStoppedTime();
-        p.timeStuff.reverse.performed += c =>toReverseTime();
+        p.timeStuff.normal.performed += c =>toTransition(TimeState.normal,0.05f);
+        p.timeStuff.slow.performed += c =>toTransition(TimeState.Slowed,0.05f);
+        p.timeStuff.stop.performed += c =>toTransition(TimeState.Stopped,0.05f);;
+        p.timeStuff.reverse.performed += c =>toTransition(TimeState.Reverse,0.05f);;
     }
     void OnEnable()
     {
@@ -62,9 +62,20 @@ public class TimeManipHandler : MonoBehaviour
             case TimeState.normal: normalUpdate(); break;
             case TimeState.Slowed: slowedTimeUpdate(); break;
             case TimeState.Stopped: stoppedTimeUpdate(); break;
-            case TimeState.Reverse: ReverseTimeUpdate(); break;
             case TimeState.TransitionPause: TransitionPauseUpdate(); break;
+            default: break;
+        }
+
+        capPower();
+    }
+
+    void FixedUpdate()
+    {
+        switch(ts)
+        {
+            case TimeState.Reverse: ReverseTimeUpdate(); break;
             case TimeState.revertToCheckpoint: revertToCheckpintUpdate(); break;
+            default: addRevertFrame(); break;
         }
     }
 
@@ -107,9 +118,6 @@ public class TimeManipHandler : MonoBehaviour
         slowPower += powerRegen * Time.deltaTime;
 
         stopPower += powerRegen * Time.deltaTime;
-
-        capPower();
-        addRevertFrame();
     }
     private void slowedTimeUpdate()
     {
@@ -120,11 +128,8 @@ public class TimeManipHandler : MonoBehaviour
         if( slowPower < 0)
         {
             slowPower = 0;
-            toNormalTime();
+            toTransition(TimeState.normal,0.1f);
         }
-
-        capPower();
-        addRevertFrame();
     }
     private void stoppedTimeUpdate()
     {
@@ -135,11 +140,8 @@ public class TimeManipHandler : MonoBehaviour
         if(stopPower < 0)
         {
             stopPower = 0;
-            toNormalTime();
+            toTransition(TimeState.normal,0.1f);
         }
-
-        capPower();
-        addRevertFrame();
     }
     private void ReverseTimeUpdate()
     {
@@ -160,15 +162,13 @@ public class TimeManipHandler : MonoBehaviour
         {
             switch(target)
             {
-            case TimeState.normal: toNormalTime(); break;
+            case TimeState.normal: toNormalTime(); sound.Play("toNormal"); break;
             case TimeState.Slowed: toSlowedTime(); break;
             case TimeState.Stopped: toStoppedTime(); break;
             case TimeState.Reverse: toReverseTime(); break;
             case TimeState.revertToCheckpoint: toCheckpoint(); break;
             default: toNormalTime(); break;
             }
-
-            sound.Play("toNormal");
         }
         else
         {
@@ -228,7 +228,6 @@ public class TimeManipHandler : MonoBehaviour
     {
         return stopPower;
     }
-
     public TimeState getTimeState()
     {
         return ts;

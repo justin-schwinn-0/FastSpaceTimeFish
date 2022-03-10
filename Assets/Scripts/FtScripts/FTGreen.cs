@@ -16,7 +16,7 @@ public class FTGreen : MonoBehaviour
     void OnTriggerEnter(Collider c)
     {
 
-        if(c.CompareTag("PLayer"))
+        if(c.CompareTag("Player"))
         {
             if(persistant)
             {
