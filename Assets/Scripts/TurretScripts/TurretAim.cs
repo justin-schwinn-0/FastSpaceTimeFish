@@ -30,7 +30,7 @@ public class TurretAim : MonoBehaviour
     void Update()
     {
 
-        
+        Aim();
     }
 
     void Aim()
