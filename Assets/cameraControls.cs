@@ -35,6 +35,15 @@ public partial class @CameraControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""vertical Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""2dac802a-d3c8-43f0-bb0c-5be3520be99d"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -50,13 +59,68 @@ public partial class @CameraControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""4210f89f-d0a2-417b-ba0d-2b0e2566e8dc"",
-                    ""path"": ""<Mouse>/delta"",
+                    ""name"": ""2D Vector"",
+                    ""id"": ""4d8c5a20-b414-4d1c-945d-648c1b20a2c5"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
-                    ""processors"": ""InvertVector2"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""move camera"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""190aa88e-d84e-4d7e-a255-d6492aed30c9"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": ""Clamp(max=2),Scale(factor=10)"",
+                    ""groups"": """",
+                    ""action"": ""move camera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""9600f5f6-24f0-4ab7-a224-8ec10435f959"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": ""Clamp(max=2),Scale(factor=10)"",
+                    ""groups"": """",
+                    ""action"": ""move camera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""5245782d-01b2-49d0-b178-d32f5e656641"",
+                    ""path"": ""<Mouse>/delta/x"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=1.5)"",
+                    ""groups"": """",
+                    ""action"": ""move camera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""ddc23471-5769-4a47-81d1-81d9da4b54de"",
+                    ""path"": ""<Mouse>/delta/x"",
+                    ""interactions"": """",
+                    ""processors"": ""Invert,Scale(factor=1.5)"",
+                    ""groups"": """",
+                    ""action"": ""move camera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4724a537-c430-48e5-aceb-fbaf2580a22f"",
+                    ""path"": ""<Mouse>/delta/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""vertical Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -68,6 +132,7 @@ public partial class @CameraControls : IInputActionCollection2, IDisposable
         // camera
         m_camera = asset.FindActionMap("camera", throwIfNotFound: true);
         m_camera_movecamera = m_camera.FindAction("move camera", throwIfNotFound: true);
+        m_camera_verticalLook = m_camera.FindAction("vertical Look", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -128,11 +193,13 @@ public partial class @CameraControls : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_camera;
     private ICameraActions m_CameraActionsCallbackInterface;
     private readonly InputAction m_camera_movecamera;
+    private readonly InputAction m_camera_verticalLook;
     public struct CameraActions
     {
         private @CameraControls m_Wrapper;
         public CameraActions(@CameraControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @movecamera => m_Wrapper.m_camera_movecamera;
+        public InputAction @verticalLook => m_Wrapper.m_camera_verticalLook;
         public InputActionMap Get() { return m_Wrapper.m_camera; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -145,6 +212,9 @@ public partial class @CameraControls : IInputActionCollection2, IDisposable
                 @movecamera.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnMovecamera;
                 @movecamera.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnMovecamera;
                 @movecamera.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnMovecamera;
+                @verticalLook.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnVerticalLook;
+                @verticalLook.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnVerticalLook;
+                @verticalLook.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnVerticalLook;
             }
             m_Wrapper.m_CameraActionsCallbackInterface = instance;
             if (instance != null)
@@ -152,6 +222,9 @@ public partial class @CameraControls : IInputActionCollection2, IDisposable
                 @movecamera.started += instance.OnMovecamera;
                 @movecamera.performed += instance.OnMovecamera;
                 @movecamera.canceled += instance.OnMovecamera;
+                @verticalLook.started += instance.OnVerticalLook;
+                @verticalLook.performed += instance.OnVerticalLook;
+                @verticalLook.canceled += instance.OnVerticalLook;
             }
         }
     }
@@ -159,5 +232,6 @@ public partial class @CameraControls : IInputActionCollection2, IDisposable
     public interface ICameraActions
     {
         void OnMovecamera(InputAction.CallbackContext context);
+        void OnVerticalLook(InputAction.CallbackContext context);
     }
 }
