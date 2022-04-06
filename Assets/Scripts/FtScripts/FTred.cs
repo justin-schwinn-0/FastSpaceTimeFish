@@ -6,7 +6,13 @@ public class FTRed : MonoBehaviour
     {
         gameObject.tag = "FTred";
 
-        gameObject.GetComponent<BoxCollider>().isTrigger = true;
+        if(gameObject.GetComponent<BoxCollider>() != null)
+            gameObject.GetComponent<BoxCollider>().isTrigger = true;
+        else 
+        {
+            gameObject.GetComponent<MeshCollider>().convex = true;
+            gameObject.GetComponent<MeshCollider>().isTrigger = true;
+        }
     }
     void OnTriggerEnter(Collider c)
     {
@@ -21,7 +27,7 @@ public class FTRed : MonoBehaviour
             }
         }
         else if(c.gameObject.CompareTag("FTblue"))
-            Destroy(c.gameObject);
+            c.gameObject.SetActive(false);
     }
     
 }
