@@ -6,7 +6,7 @@ public enum TimeState
 }
 public class TimeManipHandler : MonoBehaviour
 {
-    public SoundManager sound;
+    SoundManager sound = SoundManager.instnace;
 
     public float reverse = -1.0f;
     public float slow = 0.01f;
@@ -82,8 +82,11 @@ public class TimeManipHandler : MonoBehaviour
 
     private void toNormalTime()
     {
-        SpecialTime.timeScale = 1.0f;
-        ts = TimeState.normal;
+        if(ts != TimeState.revertToCheckpoint)
+        {
+            SpecialTime.timeScale = 1.0f;
+            ts = TimeState.normal;
+        }
     }
     private void toSlowedTime()
     {

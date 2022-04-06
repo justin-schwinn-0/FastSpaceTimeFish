@@ -9,7 +9,7 @@ public class SceneChanger : MonoBehaviour
 
     void Awake()
     {
-        gameObject.GetComponent<BoxCollider>().isTrigger = true;
+        gameObject.GetComponent<Collider>().isTrigger = true;
     }
     void OnTriggerEnter(Collider c)
     {
