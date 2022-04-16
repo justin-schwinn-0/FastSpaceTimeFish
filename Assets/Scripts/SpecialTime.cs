@@ -11,6 +11,7 @@ public class SpecialTime : MonoBehaviour
     void Start()
     {
         GAME_TIME = 0;
+        timeScale = 1f;
     }
 
     // Update is called once per frame

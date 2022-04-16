@@ -15,11 +15,6 @@ public class SoundManager : MonoBehaviour
         {
             instnace = this;
         }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
 
         foreach(Sound s in sounds)
         {
@@ -28,6 +23,10 @@ public class SoundManager : MonoBehaviour
             s.source.volume = s.volume;
             s.source.pitch = s.pitch;
         }
+    }
+    public static SoundManager getInstance()
+    {
+        return instnace;
     }
 
     public void Play(string name)

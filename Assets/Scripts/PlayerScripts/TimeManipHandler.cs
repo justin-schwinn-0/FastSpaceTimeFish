@@ -6,7 +6,7 @@ public enum TimeState
 }
 public class TimeManipHandler : MonoBehaviour
 {
-    SoundManager sound = SoundManager.instnace;
+    public SoundManager sound;
 
     public float reverse = -1.0f;
     public float slow = 0.01f;
