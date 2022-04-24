@@ -44,8 +44,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sounds:
-  - name: toNormal
+  - name: reverseStop
     clip: {fileID: 8300000, guid: 6ffa191bb98fac84b940260a0bc4847c, type: 3}
     volume: 0.6
-    pitch: 0
+    pitch: 1
     source: {fileID: 0}
+    loop: 0
+  - name: Stop
+    clip: {fileID: 8300000, guid: 427ce61b3c11c6d428ed064747541bba, type: 3}
+    volume: 0.6
+    pitch: 1
+    source: {fileID: 0}
+    loop: 0
+  - name: reverseStart
+    clip: {fileID: 8300000, guid: 3b6dc533cfcc9b747ade338d36158315, type: 3}
+    volume: 0.6
+    pitch: 1
+    source: {fileID: 0}
+    loop: 0
+  - name: music1
+    clip: {fileID: 8300000, guid: 368e08200d5428b43ab5215afd5d17d8, type: 3}
+    volume: 0.6
+    pitch: 1
+    source: {fileID: 0}
+    loop: 1
+  - name: BoomUrBad
+    clip: {fileID: 8300000, guid: 7857db84b9c0d7a40b3cf31487bad7db, type: 3}
+    volume: 0.6
+    pitch: 1
+    source: {fileID: 0}
+    loop: 1

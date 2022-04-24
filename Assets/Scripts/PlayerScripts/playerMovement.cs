@@ -26,7 +26,7 @@ public class playerMovement : MonoBehaviour
         p = new PlayerControls();
 
         p.movement.move.performed += c =>  si = c.ReadValue<Vector2>();
-        p.movement.move.canceled += c =>  dampInput();
+        p.movement.move.canceled += c => dampInput();
         p.movement.jump.performed += c => jump();
     }
     void OnEnable()
@@ -35,7 +35,7 @@ public class playerMovement : MonoBehaviour
     }
     void OnDisable()
     {
-         p.movement.Disable();
+        p.movement.Disable();
     }
 
     void Update()

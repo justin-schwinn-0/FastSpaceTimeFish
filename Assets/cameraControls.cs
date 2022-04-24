@@ -123,6 +123,17 @@ public partial class @CameraControls : IInputActionCollection2, IDisposable
                     ""action"": ""vertical Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ef28f59e-2788-448b-b902-fa2e51eeab78"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""vertical Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }

@@ -12,6 +12,7 @@ public class SpecialTime : MonoBehaviour
     {
         GAME_TIME = 0;
         timeScale = 1f;
+        Time.timeScale = 1f;
     }
 
     // Update is called once per frame

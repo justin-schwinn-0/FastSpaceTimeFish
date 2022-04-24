@@ -5,15 +5,22 @@ public class SoundManager : MonoBehaviour
 {
     public Sound[] sounds;
 
-    public static SoundManager instnace;
+    public static SoundManager instance;
+
+    bool toDestory = false;
 
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
 
-        if(instnace == null)
+        if(instance == null)
         {
-            instnace = this;
+            instance = this;
+        }
+        else 
+        {   
+            toDestory = true;
+            return;
         }
 
         foreach(Sound s in sounds)
@@ -22,11 +29,26 @@ public class SoundManager : MonoBehaviour
             s.source.clip = s.clip;
             s.source.volume = s.volume;
             s.source.pitch = s.pitch;
+            s.source.loop = s.loop;
+        }
+    }
+    public void Start()
+    {
+        if(toDestory)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        foreach(Sound s in sounds)
+        {
+            if(s.loop)
+                s.source.Play();
         }
     }
     public static SoundManager getInstance()
     {
-        return instnace;
+        return instance;
     }
 
     public void Play(string name)

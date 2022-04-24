@@ -14,6 +14,10 @@ public class PauseMenu : MonoBehaviour
         p = new PlayerControls();
         p.General.esc.performed += c => TogglePause();
     }
+    void Start()
+    {
+        Resume();
+    }
 
     void OnEnable()
     {

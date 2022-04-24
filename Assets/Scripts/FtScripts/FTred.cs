@@ -23,7 +23,10 @@ public class FTRed : MonoBehaviour
             if(t != null)
             {
                 if(t.getTimeState() != TimeState.revertToCheckpoint)
+                {
                     t.revertToCheckpoint();
+                    SoundManager.instance.Play("BoomUrBad");
+                }
             }
         }
         else if(c.gameObject.CompareTag("FTblue"))
