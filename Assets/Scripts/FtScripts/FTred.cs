@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class FTRed : MonoBehaviour
 {
+    private static int lolindex;
     void Awake()
     {
         gameObject.tag = "FTred";
@@ -25,7 +26,20 @@ public class FTRed : MonoBehaviour
                 if(t.getTimeState() != TimeState.revertToCheckpoint)
                 {
                     t.revertToCheckpoint();
-                    SoundManager.instance.Play("BoomUrBad");
+                    switch(lolindex++)
+                    {
+                        case 0: SoundManager.instance.Play("BoomUrBad"); break;
+                        case 1: SoundManager.instance.Play("stupid"); break;
+                        case 2: SoundManager.instance.Play("laugh"); break;
+                        case 3: SoundManager.instance.Play("bruh"); break;
+                        case 4: SoundManager.instance.Play("bonk"); break;
+                        case 5: SoundManager.instance.Play("disgustin"); break;
+                        default: SoundManager.instance.Play("bruh"); break;
+                    }
+
+                    if(lolindex > 5)
+                        lolindex = 0;
+                    
                 }
             }
         }
